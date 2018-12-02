@@ -44,7 +44,7 @@ class App extends Component {
         this.setState({ isLoading: false });
         if (!err) {
           message.success('Transaction successfully', 2);
-          this.setState({ amount: '', totalEther: 0 });
+          this.setState({ amount: '', totalEther: 0, clickAble: false });
         } else {
           message.error('Transaction failed', 2);
         }
