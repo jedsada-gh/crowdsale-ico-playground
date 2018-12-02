@@ -1,5 +1,7 @@
+const path = require('path');
+
 require('dotenv').config({
-  path: require('path').join(__dirname, '.env.truffle.local')
+  path: path.join(__dirname, '.env.truffle.local')
 });
 
 var HDWalletProvider = require('truffle-hdwallet-provider');
@@ -9,6 +11,7 @@ function getProvider(networkUrl) {
 }
 
 module.exports = {
+  contracts_build_directory: path.join(__dirname, 'src/contracts/'),
   solc: {
     optimizer: {
       enabled: true,
