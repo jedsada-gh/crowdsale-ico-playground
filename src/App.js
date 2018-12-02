@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Icon, Input, Button } from 'antd';
+import { Form, Icon, Input, Button, message } from 'antd';
 import './App.css';
 import token from './maxToken';
 const { web3 } = window;
@@ -9,15 +9,25 @@ const unitMaxTokenPerEth = 10;
 
 class App extends Component {
   state = {
+    myAddress: '',
+    clickAble: false,
     isLoading: false,
     amount: '',
     totalEther: 0
   };
 
+  componentDidMount() {
+    web3.eth.getAccounts((err, response) => {
+      if (!err) {
+        this.setState({ myAddress: response[0] });
+      }
+    });
+  }
+
   onAmountChange = event => {
     const amount = event.target.value;
     const totalEther = amount / unitMaxTokenPerEth;
-    this.setState({ amount, totalEther });
+    this.setState({ amount, totalEther, clickAble: amount > 0 });
   };
 
   onSubmitForm = event => {
@@ -25,16 +35,18 @@ class App extends Component {
     this.setState({ isLoading: true });
     const contract = web3.eth.contract(token.abi);
     const maxToken = contract.at(token.address);
-    var address = web3.eth.accounts[0];
     maxToken.buy(
       {
-        form: address,
+        form: this.state.myAddress,
         value: web3.toWei(this.state.totalEther, 'ether')
       },
       err => {
         this.setState({ isLoading: false });
         if (!err) {
-          this.setState({ amount: 0, totalEther: 0 });
+          message.success('Transaction successfully', 2);
+          this.setState({ amount: '', totalEther: 0 });
+        } else {
+          message.error('Transaction failed', 2);
         }
       }
     );
@@ -70,6 +82,7 @@ class App extends Component {
           </FormItem>
           <FormItem>
             <Button
+              disabled={!this.state.clickAble}
               loading={this.state.isLoading}
               icon="buy"
               style={{ width: '50%' }}
