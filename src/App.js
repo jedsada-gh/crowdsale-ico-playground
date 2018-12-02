@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 import './App.css';
+import token from './maxToken';
+const { web3 } = window;
+
 const FormItem = Form.Item;
+const unitMaxTokenPerEth = 10;
 
 class App extends Component {
   state = {
@@ -12,19 +16,36 @@ class App extends Component {
 
   onAmountChange = event => {
     const amount = event.target.value;
-    const totalEther = amount / 5;
+    const totalEther = amount / unitMaxTokenPerEth;
     this.setState({ amount, totalEther });
   };
 
   onSubmitForm = event => {
     event.preventDefault();
-    console.log('submit');
+    this.setState({ isLoading: true });
+    const contract = web3.eth.contract(token.abi);
+    const maxToken = contract.at(token.address);
+    var address = web3.eth.accounts[0];
+    maxToken.buy(
+      {
+        form: address,
+        value: web3.toWei(this.state.totalEther, 'ether')
+      },
+      err => {
+        this.setState({ isLoading: false });
+        if (!err) {
+          this.setState({ amount: 0, totalEther: 0 });
+        }
+      }
+    );
   };
 
   render() {
     return (
       <div className="App">
-        <h2>Exchange (1 eth == 5 mc)</h2>
+        <h2>
+          Exchange (1 ETH == {unitMaxTokenPerEth} {token.symbol})
+        </h2>
         <Form
           style={{ width: '30%', height: 'auto' }}
           onSubmit={this.onSubmitForm}
@@ -42,13 +63,14 @@ class App extends Component {
           </FormItem>
           <FormItem>
             <Input
-              addonAfter="eth"
+              addonAfter="ETH"
               disabled="true"
               value={this.state.totalEther}
             />
           </FormItem>
           <FormItem>
             <Button
+              loading={this.state.isLoading}
               icon="buy"
               style={{ width: '50%' }}
               type="primary"
