@@ -33,11 +33,21 @@ class App extends Component {
     });
     maxToken.startSale((err, response) => {
       if (!err) {
-        this.setState({ startDateSale: moment(response.c[0] * 1000).format() });
+        const mills = response.c[0] * 1000;
+        const diff =
+          (Date.parse(new Date(mills)) - Date.parse(new Date())) / 1000;
+        if (diff > 0) {
+          this.setState({ startDateSale: moment(mills).format() });
+        } else {
+          maxToken.deadline((err, response) => {
+            if (!err) {
+              this.setState({
+                startDateSale: moment(response.c[0] * 1000).format()
+              });
+            }
+          });
+        }
       }
-    });
-    maxToken.deadline((err, response) => {
-      // TODO: show datetime dealine
     });
   }
 
