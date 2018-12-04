@@ -33,13 +33,11 @@ class App extends Component {
     });
     maxToken.startSale((err, response) => {
       if (!err) {
-        console.log('date: ', moment(response.c[0] * 1000).format());
         this.setState({ startDateSale: moment(response.c[0] * 1000).format() });
       }
     });
     maxToken.deadline((err, response) => {
-      console.log('error: ', err);
-      console.log('response: ', response.c[0]);
+      // TODO: show datetime dealine
     });
   }
 
