@@ -72,6 +72,8 @@ contract MaxTokenV1 is TokenERC20 {
     uint256 public unitsOneEthCanBuy;
     uint256 public totalEthInWei;
     address public fundsWallet;
+    uint256 public deadline;
+    uint256 public startSale;
 
     constructor() public {
         balances[msg.sender] = 1000000000000000000000;
@@ -81,9 +83,16 @@ contract MaxTokenV1 is TokenERC20 {
         symbol = "MTC";                                     // Set the symbol for display purposes (CHANGE THIS)
         unitsOneEthCanBuy = 10;                             // Set the price of your token for the ICO (CHANGE THIS)
         fundsWallet = msg.sender;                           // The owner of the contract gets ETH
+        startSale = now + 2 days;
+        deadline = startSale + 30 days;                           // set dealine for slae token
+    }
+
+    modifier afterDeadline() { 
+        require(now >= startSale && now <= deadline, "Now can not buy and sale");
+        _;
     }
     
-    function buy() public payable {
+    function buy() public afterDeadline payable {
         totalEthInWei = totalEthInWei + msg.value;
         uint256 amount = msg.value * unitsOneEthCanBuy;
         require(balances[fundsWallet] >= amount);

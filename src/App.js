@@ -6,6 +6,8 @@ const { web3 } = window;
 
 const FormItem = Form.Item;
 const unitMaxTokenPerEth = 10;
+const contract = web3.eth.contract(token.abi);
+const maxToken = contract.at(token.address);
 
 class App extends Component {
   state = {
@@ -22,6 +24,14 @@ class App extends Component {
         this.setState({ myAddress: response[0] });
       }
     });
+    maxToken.startSale((err, response) => {
+      console.log('error: ', err);
+      console.log('response: ', response.c[0]);
+    });
+    maxToken.deadline((err, response) => {
+      console.log('error: ', err);
+      console.log('response: ', response.c[0]);
+    });
   }
 
   onAmountChange = event => {
@@ -33,8 +43,6 @@ class App extends Component {
   onSubmitForm = event => {
     event.preventDefault();
     this.setState({ isLoading: true });
-    const contract = web3.eth.contract(token.abi);
-    const maxToken = contract.at(token.address);
     maxToken.buy(
       {
         form: this.state.myAddress,
