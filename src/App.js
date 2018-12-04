@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Form, Icon, Input, Button, message } from 'antd';
 import './App.css';
 import token from './maxToken';
+import moment from 'moment';
+import Countdown from './Countdown.js';
 const { web3 } = window;
 
 const FormItem = Form.Item;
@@ -15,8 +17,13 @@ class App extends Component {
     clickAble: false,
     isLoading: false,
     amount: '',
-    totalEther: 0
+    totalEther: 0,
+    startDateSale: this.formatDateCounter(Date.now())
   };
+
+  formatDateCounter(mills) {
+    return moment(mills).format('DD/MM/YYYY HH:mm:ss');
+  }
 
   componentDidMount() {
     web3.eth.getAccounts((err, response) => {
@@ -25,8 +32,10 @@ class App extends Component {
       }
     });
     maxToken.startSale((err, response) => {
-      console.log('error: ', err);
-      console.log('response: ', response.c[0]);
+      if (!err) {
+        console.log('date: ', moment(response.c[0] * 1000).format());
+        this.setState({ startDateSale: moment(response.c[0] * 1000).format() });
+      }
     });
     maxToken.deadline((err, response) => {
       console.log('error: ', err);
@@ -63,6 +72,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <Countdown date={this.state.startDateSale} />
         <h2>
           Exchange (1 ETH == {unitMaxTokenPerEth} {token.symbol})
         </h2>
