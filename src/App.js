@@ -13,6 +13,7 @@ const maxToken = contract.at(token.address);
 
 class App extends Component {
   state = {
+    title: '',
     myAddress: '',
     clickAble: false,
     isLoading: false,
@@ -37,12 +38,16 @@ class App extends Component {
         const diff =
           (Date.parse(new Date(mills)) - Date.parse(new Date())) / 1000;
         if (diff > 0) {
-          this.setState({ startDateSale: moment(mills).format() });
+          this.setState({
+            startDateSale: moment(mills).format(),
+            title: 'Offer Start 🎉'
+          });
         } else {
           maxToken.deadline((err, response) => {
             if (!err) {
               this.setState({
-                startDateSale: moment(response.c[0] * 1000).format()
+                startDateSale: moment(response.c[0] * 1000).format(),
+                title: 'Offer End 🎊'
               });
             }
           });
@@ -80,6 +85,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <h1>{this.state.title}</h1>
         <Countdown date={this.state.startDateSale} />
         <h2>
           Exchange (1 ETH == {unitMaxTokenPerEth} {token.symbol})
