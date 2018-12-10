@@ -4,6 +4,7 @@ import './App.css';
 import token from './maxToken';
 import moment from 'moment';
 import Countdown from './Countdown.js';
+import { FlipClock } from 'reactflipclock-js';
 const { web3 } = window;
 
 const FormItem = Form.Item;
@@ -19,7 +20,7 @@ class App extends Component {
     isLoading: false,
     amount: '',
     totalEther: 0,
-    startDateSale: this.formatDateCounter(Date.now())
+    timestamp: ''
   };
 
   formatDateCounter(mills) {
@@ -39,14 +40,16 @@ class App extends Component {
           (Date.parse(new Date(mills)) - Date.parse(new Date())) / 1000;
         if (diff > 0) {
           this.setState({
-            startDateSale: moment(mills).format(),
+            timestamp: this.calculateCountdown(moment(mills).format()),
             title: 'Offer Start 🎉'
           });
         } else {
           maxToken.deadline((err, response) => {
             if (!err) {
               this.setState({
-                startDateSale: moment(response.c[0] * 1000).format(),
+                timestamp: this.calculateCountdown(
+                  moment(response.c[0] * 1000).format()
+                ),
                 title: 'Offer End 🎊'
               });
             }
@@ -82,11 +85,24 @@ class App extends Component {
     );
   };
 
+  calculateCountdown(endDate) {
+    return (Date.parse(new Date(endDate)) - Date.parse(new Date())) / 1000;
+  }
+
   render() {
     return (
       <div className="App">
         <h1>{this.state.title}</h1>
-        <Countdown date={this.state.startDateSale} />
+        {this.state.timestamp > 0 ? (
+          <div style={{ marginTop: '10px', marginBottom: '16px' }}>
+            <FlipClock
+              countDownTime={this.state.timestamp}
+              clockFace="DailyCounter"
+            />
+          </div>
+        ) : (
+          <h2>Loading...</h2>
+        )}
         <h2>
           Exchange (1 ETH == {unitMaxTokenPerEth} {token.symbol})
         </h2>
