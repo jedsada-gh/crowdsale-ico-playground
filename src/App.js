@@ -3,10 +3,15 @@ import { Form, Icon, Input, Button, message } from 'antd';
 import './App.css';
 import token from './maxToken';
 import moment from 'moment';
-import Countdown from './Countdown.js';
 import { FlipClock } from 'reactflipclock-js';
-const { web3 } = window;
 
+import { createStore } from 'redux';
+import CounterLink from './containers/CounterLink';
+import counter from './reducers';
+import { Provider } from 'react-redux';
+
+const store = createStore(counter);
+const { web3 } = window;
 const FormItem = Form.Item;
 const unitMaxTokenPerEth = 10;
 const contract = web3.eth.contract(token.abi);
@@ -91,57 +96,60 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <h1>{this.state.title}</h1>
-        {this.state.timestamp > 0 ? (
-          <div style={{ marginTop: '10px', marginBottom: '16px' }}>
-            <FlipClock
-              countDownTime={this.state.timestamp}
-              clockFace="DailyCounter"
-            />
-          </div>
-        ) : (
-          <h2>Loading...</h2>
-        )}
-        <h2>
-          Exchange (1 ETH == {unitMaxTokenPerEth} {token.symbol})
-        </h2>
-        <Form
-          style={{ width: '30%', height: 'auto' }}
-          onSubmit={this.onSubmitForm}
-        >
-          <FormItem>
-            <Input
-              prefix={
-                <Icon type="dollar" style={{ color: 'rgba(0,0,0,.25)' }} />
-              }
-              type="number"
-              placeholder="Amount"
-              value={this.state.amount}
-              onChange={this.onAmountChange}
-            />
-          </FormItem>
-          <FormItem>
-            <Input
-              addonAfter="ETH"
-              disabled="true"
-              value={this.state.totalEther}
-            />
-          </FormItem>
-          <FormItem>
-            <Button
-              disabled={!this.state.clickAble}
-              loading={this.state.isLoading}
-              icon="buy"
-              style={{ width: '50%' }}
-              type="primary"
-              htmlType="submit"
-            >
-              Buy
-            </Button>
-          </FormItem>
-        </Form>
-      </div>
+      <Provider store={store}>
+        <div className="App">
+          <h1>{this.state.title}</h1>
+          {this.state.timestamp > 0 ? (
+            <div style={{ marginTop: '10px', marginBottom: '16px' }}>
+              <FlipClock
+                countDownTime={this.state.timestamp}
+                clockFace="DailyCounter"
+              />
+            </div>
+          ) : (
+            <h2>Loading...</h2>
+          )}
+          <h2>
+            Exchange (1 ETH == {unitMaxTokenPerEth} {token.symbol})
+          </h2>
+          <Form
+            style={{ width: '30%', height: 'auto' }}
+            onSubmit={this.onSubmitForm}
+          >
+            <FormItem>
+              <Input
+                prefix={
+                  <Icon type="dollar" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
+                type="number"
+                placeholder="Amount"
+                value={this.state.amount}
+                onChange={this.onAmountChange}
+              />
+            </FormItem>
+            <FormItem>
+              <Input
+                addonAfter="ETH"
+                disabled="true"
+                value={this.state.totalEther}
+              />
+            </FormItem>
+            <FormItem>
+              <Button
+                disabled={!this.state.clickAble}
+                loading={this.state.isLoading}
+                icon="buy"
+                style={{ width: '50%' }}
+                type="primary"
+                htmlType="submit"
+              >
+                Buy
+              </Button>
+            </FormItem>
+          </Form>
+          <CounterLink />
+        </div>
+      </Provider>
     );
   }
 }
