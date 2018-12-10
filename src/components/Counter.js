@@ -23,10 +23,15 @@ class Counter extends Component {
     console.log('values: ', values);
     return (
       <p>
-        Clicked: {values.number} times <button onClick={onIncrement}>+</button>{' '}
+        Clicked: {values.number} times
+        <br />
+        <br />
+        Text: {values.text} <br />
+        <br />
+        <button onClick={onIncrement}>+</button>{' '}
         <button onClick={onDecrement}>-</button>{' '}
         <button onClick={this.incrementIfOdd}>Increment if odd</button>{' '}
-        <button onClick={this.incrementAsync}>Increment async</button>
+        <button onClick={this.incrementAsync}>Increment async</button>{' '}
         <button
           onClick={() => {
             on20scoops('20scoops');

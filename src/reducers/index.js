@@ -1,6 +1,6 @@
 export default (
   state = {
-    text: '',
+    text: 'test',
     number: 0
   },
   action
