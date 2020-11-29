@@ -14,7 +14,7 @@ const add20scoops = text => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onIncrement: () =>
+    onIncrement:Too many open files (24) () =>
       dispatch({
         type: 'INCREMENT'
       }),
